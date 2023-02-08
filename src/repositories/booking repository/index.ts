@@ -5,6 +5,15 @@ type BookingBody = {
   roomId: number
 };
 
+function findBookingByUserId(userId: number) {
+  return prisma.booking.findFirst({
+    where: { userId },
+    include: {
+      Room: true,
+    }
+  });
+}
+
 function findTicketByUserId(userId: number) {
   return prisma.ticket.findFirst({
     include: {
@@ -40,10 +49,29 @@ function insert(body: BookingBody) {
   });
 }
 
+function findBookingById(bookingId: number) {
+  return prisma.booking.findFirst({
+    where: {
+      id: bookingId
+    }
+  });
+}
+
+function deleteBooking(bookingId: number) {
+  return prisma.booking.delete({
+    where: {
+      id: bookingId
+    }
+  });
+}
+
 const BookingRepository = {
   findTicketByUserId,
   findRoomById,
-  insert
+  insert,
+  findBookingByUserId,
+  findBookingById,
+  deleteBooking
 };
 
 export default BookingRepository;

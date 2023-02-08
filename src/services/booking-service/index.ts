@@ -1,8 +1,20 @@
 import BookingRepository from "@/repositories/booking repository";
 import error from "./error";
 
+async function findBookings(userId: number) {
+  const booking = await BookingRepository.findBookingByUserId(userId);
+
+  if(!booking) throw error.NotFoundError("There is no booking for this user");
+
+  return {
+    bookingId: booking.id,
+    room: booking.Room
+  };
+}
+
 async function get(userId: number) {
-  return userId;
+  const booking = await findBookings(userId);
+  return booking;
 }
 
 async function validateTicket(userId: number) {
@@ -34,9 +46,30 @@ async function post(userId: number, roomId: number) {
   return booking;
 }
 
+async function validateBooking(bookingId: number, userId: number) {
+  const booking = await BookingRepository.findBookingById(bookingId);
+
+  if (!booking) throw error.NotFoundError("Booking not found!");
+  if (booking.userId !== userId) throw error.ForbiddenError("User dosen't own this booking.");
+
+  return;
+}
+
+async function put(userId: number, roomId: number, bookingId: number) {
+  await validateBooking(bookingId, userId);
+  await validateTicket(userId);
+  await validateRoom(roomId);
+
+  await BookingRepository.deleteBooking(bookingId);
+  const booking = await BookingRepository.insert({ userId, roomId });
+
+  return { bookingId: booking.id };
+}
+
 const BookingService = {
   get,
-  post
+  post, 
+  put
 };
 
 export default BookingService;

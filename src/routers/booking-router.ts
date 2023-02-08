@@ -9,6 +9,6 @@ bookingRouter
   .all("/*", authenticateToken)
   .get("/", getBooking)
   .post("/", validateBody(bookingSchema), postBooking)
-  .put("/", validateBody(bookingSchema), putBooking);
+  .put("/:bookingId", validateBody(bookingSchema), putBooking);
 
 export { bookingRouter };
