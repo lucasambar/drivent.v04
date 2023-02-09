@@ -9,12 +9,13 @@ export async function getBooking(req: AuthenticatedRequest, res: Response) {
     const response = await BookingService.get(userId);
     return res.send(response);
   } catch (error) {
-    if (error.name === "NotFoundError") {
+    if (error.name === "NotFound") {
       return res.status(404).send(error.message);
+    } else {
+      console.log(error);
+      res.sendStatus(500);
     }
   }
-  
-  return res.send(req.userId);
 }
 
 export async function postBooking(req: AuthenticatedRequest, res: Response) {
@@ -42,8 +43,8 @@ export async function putBooking(req: AuthenticatedRequest, res: Response) {
     const response = await BookingService.put(userId, roomId, bookingId);
     return res.send(response);
   } catch (error) {
-    if (error.name === "NotFoundError") return res.status(404).send(error.message);
-    else if (error.name === "ForbiddenError") return res.status(403).send(error.message);
+    if (error.name === "NotFound") return res.status(404).send(error.message);
+    else if (error.name === "Forbidden") return res.status(403).send(error.message);
     return res.sendStatus(500);
   }
 }
